@@ -1,6 +1,43 @@
-ikeda yuka
-増田彩乃
+public class PlayerController : MonoBehaviour
+{
+    public GameObject inkPrefab;
+    public Transform firePoint;
+    public float shootForce = 500f;
 
+    void Update()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
 
+            if (touch.phase == TouchPhase.Began)
+            {
+                Shoot(touch.position);
+            }
+        }
+    }
 
-<img src="https://www.gousa.jp/sites/default/files/styles/hero_l/public/images/hero_media_image/2016-11/DSC00570_Web72DPI.jpg?h=ba648c0f&amp;itok=kXZRfSiv" alt="アメリカメイン州：海沿いの町でショッピングや食事、観光を満喫"/>
+    void Shoot(Vector2 touchPosition)
+    {
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(touchPosition);
+        worldPos.z = 0f;
+
+        Vector2 direction = (worldPos - firePoint.position).normalized;
+
+        GameObject ink = Instantiate(inkPrefab, firePoint.position, Quaternion.identity);
+        Rigidbody2D rb = ink.GetComponent<Rigidbody2D>();
+        rb.AddForce(direction * shootForce);
+    }
+}
+          using UnityEngine;
+
+public class Ink : MonoBehaviour
+{
+    public GameObject splatPrefab;
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Instantiate(splatPrefab, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+    }
+}
